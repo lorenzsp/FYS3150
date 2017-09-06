@@ -4,8 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-    alloc.cpp \
-    p1_1b.cpp
+    p1_1c.cpp \
+    ../p1_1b/alloc.cpp
 
 HEADERS += \
-    alloc.h
+    ../p1_1b/alloc.h

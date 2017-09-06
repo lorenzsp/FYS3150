@@ -4,8 +4,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include "alloc.h"
+#include "time.h"
+
 using namespace std;
-ofstream ofile;
+// ofstream ofile;
 double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
 double f(double x){return 100*exp(-10*x);};
 
@@ -28,6 +30,9 @@ int main(int argc, char* argv[]){
 
     int i; //indici
     int j;
+
+    clock_t t;
+    t=clock();
 
     //analytical solution
     /*La calcolo e la guardo*/
@@ -110,15 +115,18 @@ int main(int argc, char* argv[]){
     }
 
     // Open file and write results to file:
-    ofile.open("dat_p1_1000.txt");
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << " x: s(x): ss(x): " << endl;
-    for (int i=0;i<=n+1;i++) {
-    ofile << setw(15) << setprecision(8) << x[i];
-    ofile << setw(15) << setprecision(8) << s[i];
-    ofile << setw(15) << setprecision(8) << ss[i] << endl;
-    }
-    ofile.close();
+//    ofile.open("dat_p1_1000.txt");
+//    ofile << setiosflags(ios::showpoint | ios::uppercase);
+//    ofile << " x: s(x): ss(x): " << endl;
+//    for (int i=0;i<=n+1;i++) {
+//    ofile << setw(15) << setprecision(8) << x[i];
+//    ofile << setw(15) << setprecision(8) << s[i];
+//    ofile << setw(15) << setprecision(8) << ss[i] << endl;
+//    }
+//    ofile.close();
+
+    t=clock()-t;
+    cout << "the programme took " <<(float) t/CLOCKS_PER_SEC<< " seconds" << endl;
 
     delete [] ss;
     delete [] s;
