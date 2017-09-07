@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
     for (i=0;i<=n+1; i++){
         s[i]=solution(x[i]);
             if(i==n+1){s[i]=0;}
-        cout << "s"<<i<<":"<<s[i]<< endl; //é quello che mi aspetto!
+       // cout << "s"<<i<<":"<<s[i]<< endl; //é quello che mi aspetto!
     }
 
     //numerical solution
@@ -75,9 +75,9 @@ int main(int argc, char* argv[]){
             a[i]=a[i-1];
             c[i]=c[i-1];
         }
-        cout << "b"<<i<<":"<<b[i]<< endl;
-        cout << "a"<<i<<":"<<a[i]<< endl;
-       cout << "c"<<i<<":"<<c[i]<< endl;
+//        cout << "b"<<i<<":"<<b[i]<< endl;
+//        cout << "a"<<i<<":"<<a[i]<< endl;
+//       cout << "c"<<i<<":"<<c[i]<< endl;
     }
 
     //forward subst
@@ -97,9 +97,9 @@ int main(int argc, char* argv[]){
         ff_t[i]=ff[i]-a[i-1]*ff_t[i-1]/(b_t[i-1]); //sorgente con tilda
     }
     for(i=1;i<=n;i++){
-    cout << "b_t"<<i<<":"<<b_t[i]<< endl;
-    cout << "ff"<<i<<":"<<ff[i]<< endl;
-   cout << "ff_t"<<i<<":"<<ff_t[i]<< endl;
+//    cout << "b_t"<<i<<":"<<b_t[i]<< endl;
+//    cout << "ff"<<i<<":"<<ff[i]<< endl;
+//   cout << "ff_t"<<i<<":"<<ff_t[i]<< endl;
     }
 
     //backward subst
