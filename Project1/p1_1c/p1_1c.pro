@@ -9,3 +9,5 @@ SOURCES += \
 
 HEADERS += \
     ../p1_1b/alloc.h
+INCLUDEPATH C:\Users\Davide\Documents\Armadillo\armadillo-8.100.1\include
+LIBS += -LC:\Users\Davide\Documents\Armadillo\armadillo-8.100.1\examples\lib_win64 -llapack_win64_MT -lblas_win64_MT

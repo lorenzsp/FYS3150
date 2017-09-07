@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <stdlib.h>
-#include <math.h>
+#include <cmath> //libreria migliore
 #include "time.h"
 #include "C:\Users\Davide\Documents\GitHub\FYS3150\Project1\p1_1b\alloc.h"
 using namespace std;
@@ -12,7 +12,7 @@ double f(double x){return 100*exp(-10*x);};
 
 
 int main(int argc, char* argv[]){
-
+    //for(n=10;n<=10^7;n=n*10){
     int n=atoi(argv[1]);
 
     //dichiaro tutte le variabili e le allocco con la funzione alloc:
@@ -31,8 +31,8 @@ int main(int argc, char* argv[]){
     int i; //indici
     int j;
 
-    clock_t t;
-    t=clock();
+//    clock_t t[n];
+//    t[n]=clock();
 
     //analytical solution
     /*La calcolo e la guardo*/
@@ -121,8 +121,8 @@ int main(int argc, char* argv[]){
 //    }
 //    ofile.close();
 
-    t=clock()-t;
-    cout << "the programme took " <<(float) t/CLOCKS_PER_SEC<< " seconds" << endl;
+//    t[n]=(float) (clock()-t[n])/CLOCKS_PER_SEC;
+//    cout << "the programme took " << t[n]<< " seconds" << endl;
 
     delete [] ss;
     delete [] s;
@@ -132,6 +132,26 @@ int main(int argc, char* argv[]){
     delete [] c;
     delete [] ff;
     delete [] ff_t;
+
+    //errors
+    double* err;
+    err=new double [n];
+
+     for(i=1;i<=n;i++){
+     err[i]=log10(abs((ss[i]-s[i])/(s[i])));
+     err[i]=abs(err[i]);
+     cout << err[i] << endl;
+    }
+     //trovo il massimo
+     double max_err=err[1]; //questo diventerà una matrice e per ogni n metterò il massimo
+     for (i = 1;i <=n;i++);
+
+         {
+             if (err[i] > max_err)
+                 max_err = err[i];
+         }
+     cout << max_err << endl;
+     //}
 return 0;
 }
 
