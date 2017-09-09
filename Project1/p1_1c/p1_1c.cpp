@@ -9,137 +9,165 @@
 using namespace std;
 using namespace arma;
 
-//ofstream ofile;
-double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
-double f(double x){return 100*exp(-10*x);};
+
+ofstream ofile; /*print to file*/
+
+// functions used
+inline double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
+inline double f(double x){return 100*exp(-10*x);};
 
 
 int main(int argc, char* argv[]){
+   int n=atoi(argv[1]);
+   int ii;
+   int q=atoi(argv[2]);
+   //mat max_err(q,3);
+   mat time(q,2);
+   if (argc<=1){
+            cout <<"You forgot something, watch out: you have to write the output file and n (int), size of vectors on same line." << endl;
+            exit(1);
+            }
+    for(ii=0;ii<=q-1;ii++){
 
-     int n=atoi(argv[1]);
-     if (argc<=1){
-        cout <<"You forgot something, watch out: you have to write the output file and n (int), size of vectors on same line." << endl;
-        exit(1);
-        }
 
-    //dichiaro tutte le variabili e le allocco con la funzione alloc:
-    vec a=randu<vec>(n+1);
-    vec b=randu<vec>(n+1);
-    vec c=randu<vec>(n+1);
-    vec x=randu<vec>(n+2);
-    vec u=randu<vec>(n+2);
-    vec r=randu<vec>(n+1);
+    //Declaration and allocation of variables with Armadillo
+    vec a=-ones<vec>(n+1);
+    vec b=ones<vec>(n+1)*2;
+    vec c=-ones<vec>(n+1);
+    vec x(n+2);
+    vec u(n+2);
+    vec r(n+1);
+    b(0)=a(0)=c(0)=0;
+    c(n)=a(n)=0;
+    double h=1.0/(n+1.0); //number of steps
 
-    double h=1.0/(n+1.0); //passi
+    int i; //index
 
-    int i; //indici
-    int j;
-
-//    clock_t t;
-//    t=clock();
+    // time calculation
+    clock_t t;
+    t=clock();
 
     //analytical solution
     for (i=0; i<=n+1; i++){
         x[i]=i*h;
-        cout << "x"<<i<<":"<<x[i]<< endl;
+        //cout << "x"<<i<<":"<<x[i]<< endl; /*print steps*/
     }
 
     for (i=0;i<=n+1; i++){
         u[i]=solution(x[i]);
             if(i==n+1){u[i]=0;}
-        cout << "s"<<i<<":"<<u[i]<< endl; //é quello che mi aspetto!
+        //cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
     }
 
     //numerical solution
-    /*sistemo la sorgente*/
      for (i=1; i<=n; i++){
-        r[i]=h*h*f(x[i]);
-    }
-    /*Riempio a,b,c*/
-    b[0]=a[0]=c[0]=0; /* così parto da indice 1 */
-    for (i=1;i<=n;i++){
-        if(i==1){
-            int bb=2;
-            int aa=-1;
-            int cc=-1;
-            b[i]=bb;
-            a[i]=aa;
-            c[i]=cc;
-        } else if(i==n) {
-            b[i]=b[i-1];
-            a[i]=0;
-            c[i]=0;
-        } else {
-            b[i]=b[i-1];
-            a[i]=a[i-1];
-            c[i]=c[i-1];
-        }
-//        cout << "b"<<i<<":"<<b[i]<< endl;
-//        cout << "a"<<i<<":"<<a[i]<< endl;
-//       cout << "c"<<i<<":"<<c[i]<< endl;
+        r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
     }
 
-    //forward subst
-    vec r_t=randu<vec>(n+1,1);
-    vec b_t=randu<vec>(n+1,1);
-    vec v=randu<vec>(n+2,1);
+//     /*Filling a,b,c*/
+//     b[0]=a[0]=c[0]=0;
+//     b[n]=2;
+//     a[n]=c[n]=0;/* si I start with index 1 */
+//    for (i=1;i<n;i++){
+//            b[i]=2;
+//            a[i]=-1;
+//            c[i]=-1;
+//        }
+//       cout << "b"<<i<<":"<<b[i]<< endl;
+//       cout << "a"<<i<<":"<<a[i]<< endl;
+//       cout << "c"<<i<<":"<<c[i]<< endl;
+
+    //Forward
+    /*Declaring vectors*/
+    vec r_t(n+1); /*vectors with _t represents tilde vectors*/
+    vec b_t(n+1);
+    vec v(n+2);
 
     b_t[0]=0;
     b_t[1]=b[1];
     r_t[0]=0;
-    r_t[1]=ff[1];
+    r_t[1]=r[1];
     for(i=2;i<=n; i++){
-        b_t[i]=b[i]-(a[i-1]*a[i-1])/(b_t[i-1]); //coeff con tilda
-        r_t[i]=r[i]-a[i-1]*r_t[i-1]/(b_t[i-1]); //sorgente con tilda
+        b_t[i]=b[i]-(a[i-1]*a[i-1])/(b_t[i-1]);
+        r_t[i]=r[i]-(a[i-1]*r_t[i-1])/(b_t[i-1]);
     }
     //for(i=1;i<=n;i++){
-//    cout << "b_t"<<i<<":"<<b_t[i]<< endl;
-//    cout << "ff"<<i<<":"<<ff[i]<< endl;
-//   cout << "ff_t"<<i<<":"<<ff_t[i]<< endl;
+//      cout << "b_t"<<i<<":"<<b_t[i]<< endl;
+//      cout << "r"<<i<<":"<<r[i]<< endl;
+//      cout << "r_t"<<i<<":"<<r_t[i]<< endl;
     //}
 
-    //backward subst
+    //backward substitution
         v[0]=v[n+1]=0;
-        r[n]=r_t[n]/b_t[n];
-    for(j=n-1;j>0; j--){
-            v[j]=(ff_t[j] -a[j]*v[j+1])/(b_t[j]);
+        v[n]=r_t[n]/b_t[n];
+    for(i=n-1;i>0; i--){
+            v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
 
     }
 
-    for(i=0; i<=n+1;i++){
-       cout << "v"<<i<<"="<<v[i]<< endl;
-    }
-
-    // Open file and write results to file:
-//    ofile.open("dat_p1_1000.txt");
-//    ofile << setiosflags(ios::showpoint | ios::uppercase);
-//    ofile << " x: u(x): v(x): " << endl;
-//    for (int i=0;i<=n+1;i++) {
-//    ofile << setw(15) << setprecision(8) << x[i];
-//    ofile << setw(15) << setprecision(8) << u[i];
-//    ofile << setw(15) << setprecision(8) << v[i] << endl;
+//    for(i=0; i<=n+1;i++){
+//       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
 //    }
-//    ofile.close();
 
-//    t[n]=(float) (clock()-t[n])/CLOCKS_PER_SEC;
-//    cout << "the programme took " << t[n]<< " seconds" << endl;
 
-    //errors
+
+
+
+    //computing relative errors
 //    int k;
-//    vec err=randu<vec>(n);
+//    double *err=new double [n];
+//    //double *err = new double [n];
 //    for(k=0;k<n;k++){
-//     err[k]=log10(abs((v[k+1]-u[k+1])/(u[k+1])));
-//     //err[i]=abs(err[i]);
+//     err[k]= log10(abs((v[k+1]-u[k+1])/(u[k+1])));
 //    }
 //     //err.print();
 
-//    mat max_err=randu<mat>(1,3);
+//   /*defining a matrix
+//                                   *with 1 row 3 columns:
+//                     * n/log10(h)/max relative error */
 
-//     //Matrix with 1 row 3 columns: n/log10(h)/max error
-//     max_err(0,0)=n;
-//     max_err(0,1)=log10(h);
-//     max_err(0,2)=min(err);
-//     max_err.print();
+//        max_err(ii,0)=n;
+//    //max_err(0,1)=log10(h);
+//    double MAX=err[0];
+//        for(k=1;k<n;k++){
+//            if(err[k]>MAX)
+//                MAX=err[k];
+//        }
+//        max_err(ii,1)=log10(h);
+//        max_err(ii,2)=MAX;
+//    //max_err.print();
+
+//    delete [] err;
+            time(ii,0)=n;
+            time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
+
+
+
+         n = 10*n;
+  }
+
+
+//     // Open file and write results to file:
+//     ofile.open("dat_p1_1000.txt");
+//     ofile << setiosflags(ios::showpoint | ios::uppercase);
+//     ofile << " x: u(x): v(x): " << endl;
+//     for (int i=0;i<=n+1;i++) {
+//     ofile << setw(15) << setprecision(8) << u[i];
+//     ofile << setw(15) << setprecision(8) << v[i] << endl;
+//     }
+//  ofile.close();
+
+         // Open file and write results to file:
+         ofile.open("time_particular.txt");
+         ofile << setiosflags(ios::showpoint | ios::uppercase);
+         ofile << " n:          time: " << endl;
+         for (int i=0;i<=q-1;i++) {
+         ofile << setw(15) << setprecision(8) << time(i,0);
+         ofile << setw(15) << setprecision(8) << time(i,1) << endl;
+         }
+      ofile.close();
+   time.print();
+
 return 0;
 }
 

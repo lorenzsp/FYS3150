@@ -99,16 +99,16 @@ int main(int argc, char* argv[])
     }
 
     // Open file and write results to file:
-    ofile.open(outfilename);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << " x:       s(x):       v(x): " << endl;
-    for (int i=1;i<=n;i++) {
-        ofile << setw(15) << setprecision(8) << x[i] << ",";
-        ofile << setw(15) << setprecision(8) << s[i] << ",";
-        ofile << setw(15) << setprecision(8) << v[i] << "," << endl;
-        }
+//    ofile.open(outfilename);
+//    ofile << setiosflags(ios::showpoint | ios::uppercase);
+//    ofile << " x:       s(x):       v(x): " << endl;
+//    for (int i=1;i<=n;i++) {
+//        ofile << setw(15) << setprecision(8) << x[i] << ",";
+//        ofile << setw(15) << setprecision(8) << s[i] << ",";
+//        ofile << setw(15) << setprecision(8) << v[i] << "," << endl;
+//        }
 
-    ofile.close();
+//    ofile.close();
 
     delete [] x;
     delete [] q;

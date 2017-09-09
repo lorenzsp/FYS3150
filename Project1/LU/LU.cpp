@@ -4,14 +4,12 @@
 #include <stdlib.h>
 #include <cmath> //libreria migliore
 #include "time.h"
-#define ARMA_USE_LAPACK
-#define ARMA_USE_BLAS
-
 #include <armadillo>
 
 using namespace std;
 using namespace arma;
 
+//function used
 double f(double x){return 100*exp(-10*x);};
 
 int main(int argc, char* argv[])
@@ -23,19 +21,21 @@ int main(int argc, char* argv[])
         exit(1);
         }
 
-    //dichiaro tutte le variabili:
+    //Declaration and allocation of variables with Armadillo
     mat A=zeros<mat>(n+2,n+2);
-    vec a=randu<vec>(n+1);
-    vec b=randu<vec>(n+1);
-    vec c=randu<vec>(n+1);
+    mat C=randu<mat>(n+2,n+2);
+    vec x=randu<vec>(n+2);
+    vec r=randu<vec>(n+2);
 
+    double h=1.0/(n+1.0); //number of steps
+
+    int i,j; //indexes
+
+    //time calculation
     //    clock_t t[n];
     //    t[n]=clock();
 
-    double h=1.0/(n+1.0); //passi
-    int i,j;
-
-    //definisco A
+    //filling the tridiagonal matrix A
     for(i=1;i<=n+1;i++){
         for(j=1;j<=n+1;j++){
             if(i==j){
@@ -47,33 +47,22 @@ int main(int argc, char* argv[])
             }
         }
     }
-    //A.print();
+    //A.print(); /*print to check*/
 
-    vec x=randu<vec>(n+2);
-    //vec u=randu<vec>(n+2);
-    vec r=randu<vec>(n+2);
-
-    //numericall solution
+    //numerical solution
     for (i=0; i<=n+1; i++){
         x[i]=i*h;
+        r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
         cout << "x"<<i<<":"<<x[i]<< endl;
     }
 
-//    for (i=0;i<=n+1; i++){
-//        u[i]=solution(x[i]);
-//            if(i==n+1){u[i]=0;}
-//        //cout << "u"<<i<<":"<<u[i]<< endl; //é quello che mi aspetto!
-//    }
+    //vec v=solve(A,r); /*numerical solution with LU, and I print it*/
+    //cout << v << endl;
+    cout <<A*C<< endl;
+mat B=A.i();
+B.print();
 
-    //numerical solution
-    /*sistemo la sorgente*/
-     for (i=0; i<=n+1; i++){
-        r[i]=h*h*f(x[i]);
-    }
-
-    vec v=solve(A,r);
-    cout << v << endl;
-
+    // Finishing clock and printing the time needed
     //    t[n]=(float) (clock()-t[n])/CLOCKS_PER_SEC;
     //    cout << "the programme took " << t[n]<< " seconds" << endl;
 
