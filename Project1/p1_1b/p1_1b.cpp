@@ -5,26 +5,39 @@
 #include <math.h>
 #include "alloc.h"
 #include "time.h"
+#include <armadillo>
+#include <string.h>
 
 using namespace std;
+using namespace arma;
+
 // ofstream ofile;
 double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
 double f(double x){return 100*exp(-10*x);};
 
 int main(int argc, char* argv[]){
 
-    int n=atoi(argv[1]);
+    int n=atoi(argv[2]);
+    if (argc<=2){
+        cout <<"You forgot something, watch out: you have to write the output file and n (int), size of vectors on same line." << endl;
+        exit(1);
+    }
 
     //dichiaro tutte le variabili e le allocco con la funzione alloc:
-    int* a=alloc(n+1);
-    int* b=alloc(n+1);
-    int* c=alloc(n+1);
-    double* x;
-    x=new double [n+2];
-    double* s; //sol anal
-    s=new double [n+2];
-    double* ff; //sorgente
-    ff=new double [n+1];
+    vec a=linspace<vec>(1,n+1);
+    vec b=linspace<vec>(1,n+1);
+    vec c=linspace<vec>(1,n+1);
+//    int* b=alloc(n+1);
+//    int* c=alloc(n+1);
+//    double* x;
+    vec x=linspace<vec>(1,n+2);
+    vec s=linspace<vec>(1,n+2);
+    vec ff=linspace<vec>(1,n+1);
+//    x=new double [n+2];
+//    double* s; //sol anal
+//    s=new double [n+2];
+//    double* ff; //sorgente
+//    ff=new double [n+1];
 
     double h=1.0/(n+1.0); //passi
 
@@ -81,12 +94,15 @@ int main(int argc, char* argv[]){
     }
 
     //forward subst
-    double* ff_t;
-    ff_t= new double [n+1];
-    double* b_t;
-    b_t=new double [n+1];
-    double* ss;
-    ss=new double [n+2];
+//    double* ff_t;
+//    ff_t= new double [n+1];
+//    double* b_t;
+//    b_t=new double [n+1];
+//    double* ss;
+//    ss=new double [n+2];
+    vec ff_t=linspace<vec>(1,n+1);
+    vec b_t=linspace<vec>(1,n+1);
+    vec ss=linspace<vec>(1,n+2);
 
     b_t[0]=0;
     b_t[1]=b[1];
@@ -128,14 +144,14 @@ int main(int argc, char* argv[]){
     t=clock()-t;
     cout << "the programme took " <<(float) t/CLOCKS_PER_SEC<< " seconds" << endl;
 
-    delete [] ss;
-    delete [] s;
-    delete [] a;
-    delete [] b;
-    delete [] b_t;
-    delete [] c;
-    delete [] ff;
-    delete [] ff_t;
+//    delete [] ss;
+//    delete [] s;
+//    delete [] b;
+//    delete [] a;
+//    delete [] b_t;
+//    delete [] c;
+//    delete [] ff;
+//    delete [] ff_t;
 return 0;
 }
 
