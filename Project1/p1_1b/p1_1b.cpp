@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <math.h>
-#include "alloc.h"
 #include "time.h"
 #include <armadillo>
 #include <string.h>
@@ -17,56 +16,48 @@ double f(double x){return 100*exp(-10*x);};
 
 int main(int argc, char* argv[]){
 
-    int n=atoi(argv[2]);
-    if (argc<=2){
+    int n=atoi(argv[1]);
+    if (argc<=1){
         cout <<"You forgot something, watch out: you have to write the output file and n (int), size of vectors on same line." << endl;
         exit(1);
     }
 
-    //dichiaro tutte le variabili e le allocco con la funzione alloc:
-    vec a=linspace<vec>(1,n+1);
-    vec b=linspace<vec>(1,n+1);
-    vec c=linspace<vec>(1,n+1);
-//    int* b=alloc(n+1);
-//    int* c=alloc(n+1);
-//    double* x;
-    vec x=linspace<vec>(1,n+2);
-    vec s=linspace<vec>(1,n+2);
-    vec ff=linspace<vec>(1,n+1);
-//    x=new double [n+2];
-//    double* s; //sol anal
-//    s=new double [n+2];
-//    double* ff; //sorgente
-//    ff=new double [n+1];
+    //Declaration and allocation of variables with Armadillo
+    vec a=randu<vec>(1,n+1);
+    vec b=randu<vec>(1,n+1);
+    vec c=randu<vec>(1,n+1);
+    vec x=randu<vec>(1,n+2);
+    vec u=randu<vec>(1,n+2);
+    vec r=randu<vec>(1,n+1);
 
-    double h=1.0/(n+1.0); //passi
+    double h=1.0/(n+1.0); //number of steps
 
-    int i; //indici
+    int i; //indexes
     int j;
 
+    //time calculation
     clock_t t;
     t=clock();
 
     //analytical solution
-    /*La calcolo e la guardo*/
     for (i=0; i<=n+1; i++){
         x[i]=i*h;
-        //cout << "x"<<i<<":"<<x[i]<< endl;
+        //cout << "x"<<i<<":"<<x[i]<< endl; /*print steps/*
     }
 
     for (i=0;i<=n+1; i++){
-        s[i]=solution(x[i]);
-            if(i==n+1){s[i]=0;}
-       // cout << "s"<<i<<":"<<s[i]<< endl; //é quello che mi aspetto!
+        u[i]=solution(x[i]);
+            if(i==n+1){u[i]=0;}
+       // cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution/*
     }
 
     //numerical solution
-    /*sistemo la sorgente*/
      for (i=1; i<=n; i++){
-        ff[i]=h*h*f(x[i]);
+        r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=f(x)*/
     }
-    /*Riempio a,b,c*/
-    b[0]=a[0]=c[0]=0; /* così parto da indice 1 */
+
+    /*Filling a,b,c*/
+    b[0]=a[0]=c[0]=0; /* si I start with index 1 */
     for (i=1;i<=n;i++){
         if(i==1){
             int bb, aa, cc;
@@ -88,70 +79,58 @@ int main(int argc, char* argv[]){
             a[i]=a[i-1];
             c[i]=c[i-1];
         }
-//        cout << "b"<<i<<":"<<b[i]<< endl;
-//        cout << "a"<<i<<":"<<a[i]<< endl;
+//       cout << "b"<<i<<":"<<b[i]<< endl;
+//       cout << "a"<<i<<":"<<a[i]<< endl;
 //       cout << "c"<<i<<":"<<c[i]<< endl;
     }
 
-    //forward subst
-//    double* ff_t;
-//    ff_t= new double [n+1];
-//    double* b_t;
-//    b_t=new double [n+1];
-//    double* ss;
-//    ss=new double [n+2];
-    vec ff_t=linspace<vec>(1,n+1);
-    vec b_t=linspace<vec>(1,n+1);
-    vec ss=linspace<vec>(1,n+2);
+    //forward substitution
+    /*Declaring vectors*/
+    vec r_t=randu<vec>(n+1); /*vectors with _t represents tilde vectors*/
+    vec b_t=randu<vec>(n+1);
+    vec v=randu<vec>(n+2);
 
     b_t[0]=0;
     b_t[1]=b[1];
-    ff_t[0]=0;
-    ff_t[1]=ff[1];
+    r_t[0]=0;
+    r_t[1]=ff[1];
     for(i=2;i<=n; i++){
-        b_t[i]=b[i]-(a[i-1]*a[i-1])/(b_t[i-1]); //coeff con tilda
-        ff_t[i]=ff[i]-a[i-1]*ff_t[i-1]/(b_t[i-1]); //sorgente con tilda
+        b_t[i]=b[i]-(a[i-1]*a[i-1])/(b_t[i-1]);
+        r_t[i]=r[i]-a[i-1]*r_t[i-1]/(b_t[i-1]);
     }
     for(i=1;i<=n;i++){
 //    cout << "b_t"<<i<<":"<<b_t[i]<< endl;
-//    cout << "ff"<<i<<":"<<ff[i]<< endl;
-//   cout << "ff_t"<<i<<":"<<ff_t[i]<< endl;
+//    cout << "r"<<i<<":"<<r[i]<< endl;
+//   cout << "r_t"<<i<<":"<<r_t[i]<< endl;
     }
 
-    //backward subst
-        ss[0]=ss[n+1]=0;
-        ss[n]=ff_t[n]/b_t[n];
-    for(j=n-1;j>0; j--){
-            ss[j]=(ff_t[j] -a[j]*ss[j+1])/(b_t[j]);
+    //backward substitution
+        v[0]=v[n+1]=0;
+        v[n]=r_t[n]/b_t[n];
+    for(i=n-1;i>0; i--){
+            v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
 
     }
 
     for(i=0; i<=n+1;i++){
-        cout << "ss"<<i<<"="<<ss[i]<< endl;
+        cout << "v"<<i<<"="<<v[i]<< endl;
     }
 
     // Open file and write results to file:
 //    ofile.open("dat_p1_1000.txt");
 //    ofile << setiosflags(ios::showpoint | ios::uppercase);
-//    ofile << " x: s(x): ss(x): " << endl;
+//    ofile << " x: u(x): v(x): " << endl;
 //    for (int i=0;i<=n+1;i++) {
 //    ofile << setw(15) << setprecision(8) << x[i];
-//    ofile << setw(15) << setprecision(8) << s[i];
-//    ofile << setw(15) << setprecision(8) << ss[i] << endl;
+//    ofile << setw(15) << setprecision(8) << u[i];
+//    ofile << setw(15) << setprecision(8) << v[i] << endl;
 //    }
 //    ofile.close();
 
+    // Finishing clock and printing the time needed
     t=clock()-t;
     cout << "the programme took " <<(float) t/CLOCKS_PER_SEC<< " seconds" << endl;
 
-//    delete [] ss;
-//    delete [] s;
-//    delete [] b;
-//    delete [] a;
-//    delete [] b_t;
-//    delete [] c;
-//    delete [] ff;
-//    delete [] ff_t;
 return 0;
 }
 
