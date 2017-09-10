@@ -126,7 +126,7 @@ int main(int argc, char* argv[]){
 //        cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
 //    }
     time(ii,0)=n;
-    time(ii,1)=(float) (clock()-t);
+    time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
     n=10*n;
 }
     // Open file and write results to file:

@@ -61,7 +61,7 @@ int main(int argc, char* argv[]){
 
     for (i=0;i<n+1; i++){
         u[i]=solution(x[i]);
-        cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
+        //cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
     }
 
 
@@ -101,14 +101,13 @@ int main(int argc, char* argv[]){
 
         v[n]=r_t[n]/b_t[n];
     for(i=n-1;i>0; i--){
-            //v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
             v[i]=(r_t[i]+v[i+1])*i/(i+1);
 
     }
 
-    for(i=0; i<=n+1;i++){
-       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
-    }
+//    for(i=0; i<=n+1;i++){
+//       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
+//    }
 
     //computing relative errors
 //    int k;
@@ -136,7 +135,7 @@ int main(int argc, char* argv[]){
 
 //    delete [] err;
             time(ii,0)=n;
-            time(ii,1)=(float) (clock()-t);
+            time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
 
 
 

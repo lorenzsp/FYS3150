@@ -3,12 +3,7 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += \
-    p1_1c.cpp \
-    ../p1_1b/alloc.cpp
-
-HEADERS += \
-    ../p1_1b/alloc.h
+SOURCES += p1specialized.cpp
 
 LIBS += -LC:\Users\Davide\Documents\Armadillo\armadillo-8.100.1\newblas -llibblas
 LIBS += -LC:\Users\Davide\Documents\Armadillo\armadillo-8.100.1\newblas -lliblapack
