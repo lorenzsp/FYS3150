@@ -63,7 +63,7 @@ int main(int argc, char* argv[]){
 
     for (i=0;i<=n+1; i++){
         u[i]=solution(x[i]);
-       //cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
+       // cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
     }
 
     //numerical solution
@@ -108,11 +108,11 @@ int main(int argc, char* argv[]){
         b_t[i]=b[i]-(a[i-1]*a[i-1])/(b_t[i-1]);
         r_t[i]=r[i]-a[i-1]*r_t[i-1]/(b_t[i-1]);
     }
-    for(i=1;i<=n;i++){
-     cout << "b_t"<<i<<":"<<b_t[i]<< endl;
-      cout << "r"<<i<<":"<<r[i]<< endl;
-      //cout << "r_t"<<i<<":"<<r_t[i]<< endl;
-    }
+//    for(i=1;i<=n;i++){
+//      cout << "b_t"<<i<<":"<<b_t[i]<< endl;
+//      cout << "r"<<i<<":"<<r[i]<< endl;
+//      cout << "r_t"<<i<<":"<<r_t[i]<< endl;
+//    }
 
     //backward substitution
 

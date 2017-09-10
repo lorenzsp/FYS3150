@@ -61,7 +61,7 @@ int main(int argc, char* argv[]){
 
     for (i=0;i<n+1; i++){
         u[i]=solution(x[i]);
-       // cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
+        cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
     }
 
 
@@ -89,20 +89,20 @@ int main(int argc, char* argv[]){
     r_t[1]=r[1];
     for(i=2;i<=n; i++){
         b_t[i]=(i+1.0)/i;
-        r_t[i]=r[i]+r_t[i-1]*(i-1.0)/i;
+        r_t[i]=r[i]+(i-1.0)*r_t[i-1]/(i);
     }
     //for(i=1;i<=n;i++){
-      //cout << "b_t"<<i<<":"<<b_t[i]<< endl;
-      //cout << "r"<<i<<":"<<r[i]<< endl;
-      //cout << "r_t"<<i<<":"<<r_t[i]<< endl;
-   // }
+//      cout << "b_t"<<i<<":"<<b_t[i]<< endl;
+//      cout << "r"<<i<<":"<<r[i]<< endl;
+//      cout << "r_t"<<i<<":"<<r_t[i]<< endl;
+    //}
 
     //backward substitution
 
         v[n]=r_t[n]/b_t[n];
     for(i=n-1;i>0; i--){
             //v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
-            v[i]=(r_t[i]+v[i+1])/b_t[i];
+            v[i]=(r_t[i]+v[i+1])*i/(i+1);
 
     }
 
