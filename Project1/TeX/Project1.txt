@@ -1,0 +1,191 @@
+\documentclass[10pt,showpacs,preprintnumbers,footinbib,amsmath,amssymb,aps,prl,twocolumn,groupedaddress,superscriptaddress,showkeys]{revtex4-1}
+\usepackage{graphicx}
+\usepackage{dcolumn}
+\usepackage{bm}
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue]{hyperref}
+\usepackage{color}
+\usepackage{listings}
+
+
+\begin{document}
+
+
+
+\title{Project 1}
+
+\author{S.~O.~Mebody}
+\affiliation{Department of Procrastination, University of Akiva}
+\author{A.~N.~Ybody} 
+\affiliation{Department of Odd Travels, University of Anoat}
+\author{N.~O.~Body}
+\affiliation{Department of Even Travels, University of Ambria}
+
+\begin{abstract}
+We present a method for solving one-dimensional Poisson equation with Dirichlet boundary conditions. We find before how to rewrite the differential equation as a linear set of equations and then we solve it using gaussian elimination and LU decomposition. We study the loss of numerical precision and the behaviour of the relative error in function of the step length.%should we describe better what is the step length or is it clear?
+We compare the gaussian elimination and LU decomposition applied to a tridiagonal thanks to the analysis of the elapsed time and the number of flops.
+%we can after add some result (for example how many points we need to see the losso of numerical precision)
+\end{abstract}
+
+
+
+\maketitle
+
+
+
+\section{Introduction}
+The project shows how it is possible to solve numerically the one-dimensional Poisson using linear algebra but also
+
+
+
+\section{Methods and algortihms}
+
+
+Our purpose is to discretize the one-dimensional Poisson equation (1) in order to find a numerical solution in the interval $x\in(0,1)$:
+\begin{equation}
+\begin{cases}
+- \frac{d^2 u(x)}{dx^2} = f(x) = 100e^{-10x} \\
+u(0) = 1 \\
+u(1) = 0 
+\end{cases}
+\end{equation}
+According to Taylor expansion we can rewrite the second derivative as:
+\[
+\frac{d^2 u(x)}{dx^2} = \frac{u(x+h) + u(x-h) - 2u(x)}{h^2} + O(h^2)
+\]
+we discretize the interval $(0,1)$ in $n+2$ points $x_i = i \, h$ with $h=1/(n+1)$ from $x_0 = 0$ to $x_{n+1} = 1$. If we neglect the term $O(h^2)$ the equation (1) becomes :
+\begin{equation*}
+   -\frac{v_{i+1}+v_{i-1}-2v_i}{h^2} = f_i  \hspace{0.5cm} \mathrm{for} \hspace{0.1cm} i=1,\dots, n,
+\end{equation*}
+where $f_i=f(x_i)$ and $v_i = u(x_i)$.
+We  can rewrite this equation as a linear set of equations of the form
+\begin{equation*}
+   \mathbf{A}\mathbf{v} = \mathbf{r},
+\end{equation*}
+where $r_i=h^2 f_i$ and $\mathbf{A}$ is an $n\times n$  tridiagonal matrix which we rewrite as
+
+\[
+    \mathbf{A} = \begin{bmatrix}
+                           2& -1& 0 &\dots   & \dots &0 \\
+                           -1 & 2 & -1 &0 &\dots &\dots \\
+                           0&-1 &2 & -1 & 0 & \dots \\
+                           & \dots   & \dots &\dots   &\dots & \dots \\
+                           0&\dots   &  &-1 &2& -1 \\
+                           0&\dots    &  & 0  &-1 & 2 \\
+                      \end{bmatrix},
+\]
+ % i think this is the request of the point 1a
+\begin{subequations}
+\begin{align}
+ 2&v_1 - 1 v_2 + 0 v_3 + 0v_4 ... = h^2 f_1 = r_1  \\
+ -1&v_1 + 2 v_2 + -1 v_3 + 0v_4 ... = h^2 f_2 = r_2 \\
+0&v_1 -1 v_2 + 2 v_3 + -1 v_4 +... = h^2 f_2 = r_3 \\
+\quad ... \notag
+\end{align}
+\end{subequations}
+We can use the gaussian elimination applied to this specific matrix $\mathbf{A}$. We define two new variables:
+\begin{equation}
+d_{i} = 2 - \frac{1}{d_{i-1}} = \frac{i+1}{i} 
+\end{equation}
+\begin{equation}
+\tilde{r}_i = r_i  - \frac{\tilde{r}_{i-1}}{d_{i-1}}
+\end{equation}
+where $i=2,3,...,n$ and $d_1 = 2$ and $\tilde{r}_1 = r_1$. After that we obtain a new matrix with all the elements under the diagonal equal to zero.  
+
+
+%% arrivato qui
+%% grande mna
+
+
+
+has a closed-form  solution given by $u(x) = 1-(1-e^{-10})x-e^{-10x}$ (convince yourself that this is correct by inserting the
+solution in the Poisson equation).  We will compare
+our numerical solution with this result in the next exercise. 
+
+
+We can rewrite our matrix $\mathbf{A}$ in terms of one-dimensional vectors $a,b,c$  
+of length $1:n$. 
+Our linear equation reads
+
+\[
+    \mathbf{A} = \begin{bmatrix}
+                           b_1& c_1 & 0 &\dots   & \dots &\dots \\
+                           a_1 & b_2 & c_2 &\dots &\dots &\dots \\
+                           & a_2 & b_3 & c_3 & \dots & \dots \\
+                           & \dots   & \dots &\dots   &\dots & \dots \\
+                           &   &  &a_{n-2}  &b_{n-1}& c_{n-1} \\
+                           &    &  &   &a_{n-1} & b_n \\
+                      \end{bmatrix}\begin{bmatrix}
+                           v_1\\
+                           v_2\\
+                           \dots \\
+                          \dots  \\
+                          \dots \\
+                           v_n\\
+                      \end{bmatrix}
+  =\begin{bmatrix}
+                           \tilde{b}_1\\
+                           \tilde{b}_2\\
+                           \dots \\
+                           \dots \\
+                          \dots \\
+                           \tilde{b}_n\\
+                      \end{bmatrix}.
+\]
+We can compute the relative error  in the data set $i=1,\dots, n$,by setting up
+
+\[
+   \epsilon_i=log_{10}\left(\left|\frac{v_i-u_i}
+                 {u_i}\right|\right),
+\]
+as function of $log_{10}(h)$ for the function values $u_i$ and $v_i$.
+For each step length extract the max value of the relative error.  
+Try to increase $n$ to $n=10^7$.  Make a table of the results and 
+comment your results. You can use either the algorithm from b) or c). 
+
+To compute the elapsed time in c++ you can use the following statements
+\begin{lstlisting}
+...
+#include "time.h"   //  you have to include the time.h header
+int main()
+{
+    // declarations of variables 
+    ...
+    clock_t start, finish;  //  declare start and final time
+    start = clock();
+    // your code is here, do something and then get final time
+    finish = clock();
+    ( (finish - start)/CLOCKS_PER_SEC );
+...
+\end{lstlisting}
+
+\section{Our results}
+
+We present our results in Fig.\ref{fig:figure1}.
+
+\begin{figure}[ht!] \label{fig:figure1}
+\centering
+\includegraphics[width=0.57\textwidth]
+{image/try1.eps}
+\caption{Our results could not be better}
+\end{figure}
+
+\begin{figure}[ht!] \label{fig:figure2}
+\centering
+\includegraphics[width=0.57\textwidth]
+{image/error.eps}
+\caption{Our results could not be better}
+\end{figure}
+
+\section{Conclusions and perspectives}
+What a wonderful world!
+
+\begin{thebibliography}{99}
+\bibitem{heisenberg} W. Heisenberg, Zeits. f. Physik {\bf 77}, 1 (1932).
+\bibitem{miller2006} G.~A.~Miller, A.~K.~Opper, and E.~J.~Stephenson, Annu.~Rev.~Nucl.~Sci.~{\bf 56}, 253 (2006).
+\bibitem{ekstrom2015} A.~Ekstr\"om, G.~R.~Jansen, K.~A.~Wendt, G.~Hagen, T.~Papenbrock, B.~D.~Carlsson, C.~Forssen, M.~Hjorth-Jensen, P.~Navratil, and W.~Nazarewicz, Phys.~Rev.~C {\bf 91}, 051301(R) (2015).
+\bibitem{brown1977} B. A. Brown, A. Arima and J. B. McGrory, Nucl. Phys. {\bf A277}, 77 (1977) and references therein.
+\end{thebibliography}
+
+\end{document}
+
+
