@@ -13,8 +13,8 @@ using namespace arma;
 ofstream ofile; /*print to file*/
 
 // functions used
-inline double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
-inline double f(double x){return 100*exp(-10*x);};
+double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
+double f(double x){return 100*exp(-10*x);};
 
 int main(int argc, char* argv[]){
 
@@ -39,8 +39,14 @@ int main(int argc, char* argv[]){
     vec c(n+1);
     vec x(n+2);
     vec u(n+2); /*analytical solution*/
+    u[n+1]=0;
     vec r(n+1);
-
+    vec r_t(n+1); /*vectors with _t represents tilde vectors*/
+    r_t[0]=0;
+    vec b_t(n+1);
+     b_t[0]=0;
+    vec v(n+2); /*numerical solution*/
+    v[0]=v[n+1]=0;
     double h=1.0/(n+1.0); //number of steps
 
     int i; //index
@@ -57,7 +63,6 @@ int main(int argc, char* argv[]){
 
     for (i=0;i<=n+1; i++){
         u[i]=solution(x[i]);
-            if(i==n+1){u[i]=0;}
        // cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
     }
 
@@ -67,7 +72,7 @@ int main(int argc, char* argv[]){
     }
 
     /*Filling a,b,c*/
-    b[0]=a[0]=c[0]=0; /* so I start with index 1 */
+     /* so I start with index 1 */
     for (i=1;i<=n;i++){
         if(i==1){
 //            cout << "b[i]=" <<endl;
@@ -95,26 +100,22 @@ int main(int argc, char* argv[]){
 
     //forward substitution
     /*Declaring vectors*/
-    vec r_t(n+1); /*vectors with _t represents tilde vectors*/
-    vec b_t(n+1);
-    vec v(n+2); /*numerical solution*/
 
-    b_t[0]=0;
     b_t[1]=b[1];
-    r_t[0]=0;
+
     r_t[1]=r[1];
     for(i=2;i<=n; i++){
         b_t[i]=b[i]-(a[i-1]*a[i-1])/(b_t[i-1]);
         r_t[i]=r[i]-a[i-1]*r_t[i-1]/(b_t[i-1]);
     }
-    //for(i=1;i<=n;i++){
+//    for(i=1;i<=n;i++){
 //      cout << "b_t"<<i<<":"<<b_t[i]<< endl;
 //      cout << "r"<<i<<":"<<r[i]<< endl;
 //      cout << "r_t"<<i<<":"<<r_t[i]<< endl;
-    //}
+//    }
 
     //backward substitution
-        v[0]=v[n+1]=0;
+
         v[n]=r_t[n]/b_t[n];
     for(i=n-1;i>0; i--){
             v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
@@ -125,7 +126,7 @@ int main(int argc, char* argv[]){
 //        cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
 //    }
     time(ii,0)=n;
-    time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
+    time(ii,1)=(float) (clock()-t);
     n=10*n;
 }
     // Open file and write results to file:

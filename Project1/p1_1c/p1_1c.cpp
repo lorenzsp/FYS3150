@@ -13,8 +13,8 @@ using namespace arma;
 ofstream ofile; /*print to file*/
 
 // functions used
-inline double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
-inline double f(double x){return 100*exp(-10*x);};
+double solution(double x){return 1.0-(1.0-exp(-10))*x-exp(-10*x);};
+double f(double x){return 100*exp(-10*x);};
 
 
 int main(int argc, char* argv[]){
@@ -31,14 +31,20 @@ int main(int argc, char* argv[]){
 
 
     //Declaration and allocation of variables with Armadillo
-    vec a=-ones<vec>(n+1);
-    vec b=ones<vec>(n+1)*2;
-    vec c=-ones<vec>(n+1);
+
     vec x(n+2);
     vec u(n+2);
+    u[n+1]=0;
     vec r(n+1);
-    b(0)=a(0)=c(0)=0;
-    c(n)=a(n)=0;
+    vec r_t(n+1); /*vectors with _t represents tilde vectors*/
+    r_t[0]=0;
+    vec b_t(n+1);
+    b_t[0]=0;
+    b_t[1]=2;
+    vec v(n+2);
+    v[0]=v[n+1]=0;
+
+
     double h=1.0/(n+1.0); //number of steps
 
     int i; //index
@@ -53,11 +59,11 @@ int main(int argc, char* argv[]){
         //cout << "x"<<i<<":"<<x[i]<< endl; /*print steps*/
     }
 
-    for (i=0;i<=n+1; i++){
+    for (i=0;i<n+1; i++){
         u[i]=solution(x[i]);
-            if(i==n+1){u[i]=0;}
-        //cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
+       // cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
     }
+
 
     //numerical solution
      for (i=1; i<=n; i++){
@@ -79,17 +85,11 @@ int main(int argc, char* argv[]){
 
     //Forward
     /*Declaring vectors*/
-    vec r_t(n+1); /*vectors with _t represents tilde vectors*/
-    vec b_t(n+1);
-    vec v(n+2);
 
-    b_t[0]=0;
-    b_t[1]=b[1];
-    r_t[0]=0;
     r_t[1]=r[1];
     for(i=2;i<=n; i++){
-        b_t[i]=b[i]-(a[i-1]*a[i-1])/(b_t[i-1]);
-        r_t[i]=r[i]-(a[i-1]*r_t[i-1])/(b_t[i-1]);
+        b_t[i]=(i+1)/i;
+        r_t[i]=r[i]+(i-1)*r_t[i-1]/(i);
     }
     //for(i=1;i<=n;i++){
 //      cout << "b_t"<<i<<":"<<b_t[i]<< endl;
@@ -98,20 +98,17 @@ int main(int argc, char* argv[]){
     //}
 
     //backward substitution
-        v[0]=v[n+1]=0;
+
         v[n]=r_t[n]/b_t[n];
     for(i=n-1;i>0; i--){
-            v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
+            //v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
+            v[i]=(r_t[i]+v[i+1])*i/(i+1);
 
     }
 
 //    for(i=0; i<=n+1;i++){
 //       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
 //    }
-
-
-
-
 
     //computing relative errors
 //    int k;
@@ -139,7 +136,7 @@ int main(int argc, char* argv[]){
 
 //    delete [] err;
             time(ii,0)=n;
-            time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
+            time(ii,1)=(float) (clock()-t);
 
 
 
