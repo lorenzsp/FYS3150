@@ -38,6 +38,7 @@ int main(int argc, char* argv[]){
     vec b(n+1);
     vec c(n+1);
     vec x(n+2);
+    vec f(n+2);
     vec u(n+2); /*analytical solution*/
     u[n+1]=0;
     vec r(n+1);
@@ -60,15 +61,16 @@ int main(int argc, char* argv[]){
         x[i]=i*h;
         //cout << "x"<<i<<":"<<x[i]<< endl; /*print steps*/
     }
-
-    for (i=0;i<=n+1; i++){
-        u[i]=solution(x[i]);
-       // cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
+    for(int i=1; i<=n;i++){
+        f[i]=f(x[i]);
     }
-
+    for (i=0; i<n+1; i++){
+        u[i]=solution(x[i]);
+       cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
+    }
     //numerical solution
      for (i=1; i<=n; i++){
-        r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
+        r[i]=h*h*f[i]; /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
     }
 
     /*Filling a,b,c*/
@@ -122,11 +124,11 @@ int main(int argc, char* argv[]){
 
     }
 
-//    for(i=0; i<=n+1;i++){
-//        cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
-//    }
+    for(i=0; i<=n+1;i++){
+        cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
+    }
     time(ii,0)=n;
-    time(ii,1)=(float) (clock()-t);
+    time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
     n=10*n;
 }
     // Open file and write results to file:
