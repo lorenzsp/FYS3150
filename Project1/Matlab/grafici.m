@@ -1,59 +1,43 @@
-%% n=10
+%% Plot generator for project1
+%% Import data
+import_dati_p1_10;
+import_dati_p1_100;
+import_dati_p1_1000;
 
-import_dati_p1_10
+%% Generate data matrices for each run
+%Create matrix for analytical solution
+A = [x3 s3];
+%Create martix for 1st, 2nd, 3rd run (n=10,100,1000)
+N10 = [x1 ss1];
+N100 = [x2 ss2];
+N1000 = [x3 ss3];
 
-fig1=figure();
-
-axs1=gca;
-set(axs1, 'NextPlot', 'add');
-yl1= ylabel(['solution']);
-set(yl1, 'Fontsize', 18);
-
-xl1 = xlabel(['x']);
-set(xl1, 'Fontsize', 18);
-
-tl1 = title('Comparison between analytical and numerical solution with n=10');
-set(tl1, 'Fontsize', 24);
-
-plot(x1, s1);
+%% Plot
+%Plot numerical solution for n=1000
+plot(N1000(:,1),N1000(:,2),'Linestyle','none','Linewidth',0.2,...
+    'Marker','.','Markersize',5,'color','b');
 hold on
-plot(x1,ss1);
-% n=100
-import_dati_p1_100
-
-%fig2=figure();
-
-axs2=gca;
-set(axs2, 'NextPlot', 'add');
-yl2 = ylabel(['Solution']);
-set(yl2, 'Fontsize', 18);
-
-xl2 = xlabel(['x']);
-set(xl2, 'Fontsize', 18);
-
-tl2 = title('Comparison between analytical and numerical solution with n=100');
-set(tl2, 'Fontsize', 24);
-
-plot(x2, s2);
+%Plot numerical solution for n=100
+plot(N100(:,1),N100(:,2),'Linestyle','--','Linewidth',0.2,...
+    'Marker','.','Markersize',8,'color',[0 230 77]/256);
 hold on
-plot(x2,ss2);
-
-% n=100
-import_dati_p1_1000
-
-%fig3=figure();
-
-axs3=gca;
-set(axs3, 'NextPlot', 'add');
-yl3 = ylabel(['solution']);
-set(yl3, 'Fontsize', 18);
-
-xl3 = xlabel(['x']);
-set(xl3, 'Fontsize', 18);
-
-tl3 = title('Comparison between analytical and numerical solution with n=1000');
-set(tl3, 'Fontsize', 24);
-
-plot(x3, s3);
+%Plot numerical solution for n=10
+plot(N10(:,1),N10(:,2),'Linestyle','--','Linewidth',0.2,...
+    'Marker','.','Markersize',8,'color',[255 204 0]/256);
 hold on
-plot(x3,ss3);
+%Plot analytical solution
+plot(A(:,1),A(:,2),'Linestyle','-','Linewidth',0.5...
+    ,'color','r');
+
+% Make a legend
+axs = gca;
+ll=legend([axs],'show','$n = 1000$','$n=100$','$n=10$',...
+    'analytical s.');
+set(ll,'FontSize',10);
+set(ll,'Interpreter','LaTeX');
+
+% Set the rest of the features
+title('Numerical and analytical solutions - comparison',...
+    'Interpreter','LateX','FontSize',18);
+xlabel('$x$','Interpreter','LaTeX','FontSize',15);
+ylabel('$u(x)$','Interpreter','LaTeX','FontSize',15);
