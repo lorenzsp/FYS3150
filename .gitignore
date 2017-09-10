@@ -52,3 +52,13 @@ doc/Projects/2016/Project2/.project2_2016.copyright
 *.user
 
 doc/Programs/ParallelizationMPI/dill10
+*.stash
+*.exe
+Project1/build-p1_1b-Desktop_Qt_5_9_1_MinGW_32bit-Debug/Makefile
+*.Debug
+*.Release
+*.txt
+Project1/build-p1_1c-Desktop_Qt_5_9_1_MinGW_32bit-Debug/Makefile
+*.cpp
+*.pro
+Project1/p1_1b/p1_1b.cpp
