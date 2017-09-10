@@ -34,6 +34,10 @@ int main(int argc, char* argv[]){
 
     vec x(n+2);
     vec u(n+2);
+    vec f(n+2);
+
+
+
     u[n+1]=0;
     vec r(n+1);
     vec r_t(n+1); /*vectors with _t represents tilde vectors*/
@@ -59,6 +63,10 @@ int main(int argc, char* argv[]){
         //cout << "x"<<i<<":"<<x[i]<< endl; /*print steps*/
     }
 
+    for(int i=1; i<=n;i++){
+        f[i]=f(x[i]);
+    }
+
     for (i=0;i<n+1; i++){
         u[i]=solution(x[i]);
        // cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
@@ -67,7 +75,7 @@ int main(int argc, char* argv[]){
 
     //numerical solution
      for (i=1; i<=n; i++){
-        r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
+        r[i]=h*h*f[i]; /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
     }
 
 //     /*Filling a,b,c*/
@@ -136,7 +144,7 @@ int main(int argc, char* argv[]){
 
 //    delete [] err;
             time(ii,0)=n;
-            time(ii,1)=(float) (clock()-t);
+            time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
 
 
 
