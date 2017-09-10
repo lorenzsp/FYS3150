@@ -17,7 +17,7 @@ CXXFLAGS      = -fno-keep-inline-dllexport -pipe -O2 -std=gnu++11 -Wextra -Wall 
 INCPATH       = -I..\p1_1c -I. -I..\..\..\..\Armadillo\armadillo-8.100.1\include -IC:\Qt\5.9.1\mingw53_32\mkspecs\win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,console -mthreads
-LIBS        =        -LC:\Users\Davide\Documents\Armadillo\newblas -llibblas -lliblapack 
+LIBS        =        -LC:\Users\Davide\Documents\Armadillo\armadillo-8.100.1\newblas -llibblas -lliblapack 
 QMAKE         = C:\Qt\5.9.1\mingw53_32\bin\qmake.exe
 IDC           = idc
 IDL           = midl
@@ -99,8 +99,7 @@ compiler_clean:
 
 ####### Compile
 
-release/p1_1c.o: ../p1_1c/p1_1c.cpp C:/Users/Davide/Documents/GitHub/FYS3150/Project1/p1_1b/alloc.h \
-		../../../../Armadillo/armadillo-8.100.1/include/armadillo \
+release/p1_1c.o: ../p1_1c/p1_1c.cpp ../../../../Armadillo/armadillo-8.100.1/include/armadillo \
 		../../../../Armadillo/armadillo-8.100.1/include/armadillo_bits/compiler_extra.hpp \
 		../../../../Armadillo/armadillo-8.100.1/include/armadillo_bits/config.hpp \
 		../../../../Armadillo/armadillo-8.100.1/include/armadillo_bits/compiler_setup.hpp \
