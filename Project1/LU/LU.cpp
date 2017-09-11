@@ -20,13 +20,13 @@ int main(int argc, char* argv[])
     int n=atoi(argv[1]);
     int ii;
     int q=atoi(argv[2]);
-    //mat max_err(q,3);
+    mat max_err(q,3);
     mat time(q,2);
     if (argc<=1){
              cout <<"You forgot something, watch out: you have to write the output file and n (int), size of vectors on same line." << endl;
              exit(1);
              }
-     for(ii=0;ii<=q-1;ii++){
+for(ii=0; ii<=q-1; ii++){
 
     //Declaration and allocation of variables with Armadillo
     mat A=zeros<mat>(n+2,n+2);
@@ -60,11 +60,11 @@ int main(int argc, char* argv[])
     for (i=0; i<=n+1; i++){
         x[i]=i*h;
         r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
-        cout << "x"<<i<<":"<<x[i]<< endl;
-    }
+//        cout << "x"<<i<<":"<<x[i]<< endl;
+        }
 
-    //vec v=solve(A,r); /*numerical solution with LU, and I print it*/
-    //cout << v << endl;
+    vec v=solve(A,r); /*numerical solution with LU, and I print it*/
+//    cout << v << endl;
 
 //    // find LU decomp of A, if needed, P is the permutation matrix
 //      mat L, U;
@@ -76,20 +76,20 @@ int main(int argc, char* argv[])
 //      //Check that A = LU
 //      (A-L*U).print("Test of LU decomposition");
 
-    time(ii,0)=n;
-    time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
+     time(ii,0)=n;
+     time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
 
-   n=n*10;
-     }
+     n=n*10;
+}
      // Open file and write results to file:
      ofile.open("time_LU.txt");
      ofile << setiosflags(ios::showpoint | ios::uppercase);
      ofile << " n:          time: " << endl;
      for (int i=0;i<=q-1;i++) {
-     ofile << setw(15) << setprecision(8) << time(i,0);
-     ofile << setw(15) << setprecision(8) << time(i,1) << endl;
+        ofile << setw(15) << setprecision(8) << time(i,0);
+        ofile << setw(15) << setprecision(8) << time(i,1) << endl;
      }
-  ofile.close();
+ofile.close();
 time.print();
     return 0;
 }
