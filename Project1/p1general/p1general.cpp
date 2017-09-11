@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
     }
     for (i=0; i<n+1; i++){
         u[i]=solution(x[i]);
-       cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
+     //  cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
     }
     //numerical solution
      for (i=1; i<=n; i++){
@@ -124,9 +124,9 @@ int main(int argc, char* argv[]){
 
     }
 
-    for(i=0; i<=n+1;i++){
-        cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
-    }
+   // for(i=0; i<=n+1;i++){
+   //     cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
+   // }
     time(ii,0)=n;
     time(ii,1)=(float) (clock()-t)/CLOCKS_PER_SEC;
     n=10*n;
