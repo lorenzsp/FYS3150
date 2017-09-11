@@ -1,0 +1,233 @@
+\documentclass[10pt,showpacs,preprintnumbers,footinbib,amsmath,amssymb,aps,prl,twocolumn,groupedaddress,superscriptaddress,showkeys]{revtex4-1}
+\usepackage{bm}
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue]{hyperref}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{amsmath, amssymb, graphicx, dcolumn}
+\usepackage{amsthm}
+
+\begin{document}
+
+
+
+\title{FYS3150 - PROJECT 1}
+
+\author{Federico Nardi}
+\affiliation{Department of Procrastination, University of Akiva}
+\author{Davide Saccardo} 
+\affiliation{Department of Odd Travels, University of Anoat}
+\author{Lorenzo Speri}
+\affiliation{Department of Even Travels, University of Ambria}
+
+\begin{abstract}
+	\textbf{	
+	In this project we study the loss of numerical precision due to round-off errors made by the calculator. To do that we implement a method to solve a classical Poisson problem with Dirichlet boundary conditions and we analyze the step-size dependance of the relative deviation between the numerical results and the analytical expression.
+	Furthermore we analize the efficiency of two different methods that can be implemented in the algorithm to solve linear systems: LU decomposition and Gaussian elimination. Moreover, we develope a particular algorithm to solve our specific system for the Poisson problem.}
+\end{abstract}
+
+
+
+\maketitle
+
+
+
+\section{Introduction}
+The aim of this project is to study the loss of numerical precision due to the fact that a computer can represent a finite amount of numbers. We analize that in the context of computing a numerical second derivative to solve a Poisson problem with Dirichlet boundary conditions:
+\begin{equation}\label{ref:poisson}
+\begin{cases}
+- \frac{d^2 u(x)}{dx^2} = f(x)\\
+u(0) = 1 \\
+u(1) = 0 
+\end{cases}
+\end{equation}
+Where the source term is set to $f(x) = 100e^{-10x}$.
+To do that we define a relative error
+\begin{equation}
+\varepsilon = \frac{|v - u|}{|u|}
+\end{equation}
+and we modify the step-size $h$ to see up to when it follows the mathematics and goes like $O(h^2)$.
+
+Numerically, we reduce the problem to solving a linear system of equations; we can implement the algorithm in two ways: by using Gaussian Elimination or LU decomposition. We analize the efficiency of both methods by computing the time the calculator needs to run the code and the number of flops. Moreover we develope and see the efficiency of a third method to solve our specific problem, that does not imply defining a matrix.
+
+In the further sections we will go through the way we develope those algorithms, how we implement them on a C++ code and the results we obtain by running it.
+
+%scrivi che plottiamo le soluzioni, scrivi che il terzo metodo è sppecializzato mentre il primo è più generale
+
+
+\section{Methods and algortihms}
+%To compute the elapsed time in c++ you can use the following statements
+%\begin{lstlisting}
+%...
+%#include "time.h"   //  you have to include the time.h header
+%int main()
+%{
+%    // declarations of variables 
+%    ...
+%    clock_t start, finish;  //  declare start and final time
+%    start = clock();
+%    // your code is here, do something and then get final time
+%    finish = clock();
+%    ( (finish - start)/CLOCKS_PER_SEC );
+%...
+%\end{lstlisting}
+Our purpose is to discretize the one-dimensional Poisson equation q.(\ref{Poisson}) in order to find a numerical solution in the interval $x\in(0,1)$:
+\begin{equation}
+\label{Poisson}
+\begin{cases}
+- \frac{d^2 u(x)}{dx^2} = f(x)\\
+u(0) = 1 \\
+u(1) = 0 
+\end{cases}
+\end{equation}
+%where we are assuming that the source term is $f(x)=100e^{-10x}$.
+According to Taylor expansion we can rewrite the second derivative as:
+\[
+\frac{d^2 u(x)}{dx^2} = \frac{u(x+h) + u(x-h) - 2u(x)}{h^2} + O(h^2)
+\]
+we discretize the interval $(0,1)$ in $n+2$ points $x_i = i \, h$ with $h=1/(n+1)$ from $x_0 = 0$ to $x_{n+1} = 1$. If we neglect the term $O(h^2)$ the equation (1) becomes :
+\begin{equation}
+-\frac{v_{i+1}+v_{i-1}-2v_i}{h^2} = f_i  \hspace{0.5cm} \text{for} \hspace{0.1cm} i=1,\dots, n, \notag
+\end{equation}
+where $f_i=f(x_i)$ and $v_i = u(x_i)$.
+We can explicitate this equation as a linear set of equations of the form
+\begin{align} \notag	
+2&v_1 - 1 v_2 + 0 v_3 + 0v_4+ \dots = h^2 f_1  \\ \notag
+-1&v_1 + 2 v_2 + -1 v_3 + 0v_4+ \dots = h^2 f_2 \\ \notag
+0&v_1 -1 v_2 + 2 v_3 + -1 v_4 + \dots = h^2 f_2 \\ \notag
+\quad \vdots \notag
+\end{align}
+
+If we define $r_i=h^2f_i$ and $\mathbf{A}$ as an $n\times n$ tridiagonal matrix, we can rewrite the set of equations as 
+\begin{equation*}
+\mathbf{A}\mathbf{v} = \mathbf{r},
+\end{equation*}
+\begin{equation}
+\text{where}\qquad
+\label{A}
+\mathbf{A} = \begin{bmatrix}
+2& -1& 0 &\dots   & \dots &0 \\
+-1 & 2 & -1 &0 &\dots &\dots \\
+0&-1 &2 & -1 & 0 & \dots \\
+& \ddots   & \ddots &\ddots   &\ddots & 0 \\
+0&\dots   &  &-1 &2& -1 \\
+0&\dots    &  & 0  &-1 & 2 \\
+\end{bmatrix},
+\end{equation}
+
+In addition, we can represents a general system using coefficients ($a_i$,$b_i$,$c_i$) as
+\begin{equation}
+\begin{bmatrix}
+b_1& c_1& 0 &\dots   & \dots &0 \\
+a_1 & b_2 & c_2 &0 &\dots &\dots \\
+0&a_2 & b_3 & c_3 & 0 & \dots \\
+& \ddots   & \ddots &\ddots   &\ddots & 0 \\
+0&\dots   &  &a_{n-2} &b_{n_1}& c_n \\
+0&\dots    &  & 0  &a_{n-1} & b_n \\
+\end{bmatrix}\left[\begin{array}{c}
+v_1 \\
+\vdots \\
+\vdots \\
+\vdots \\
+v_n
+\end{array}\right]=\left[\begin{array}{c}
+r_1 \\
+\vdots \\
+\vdots \\
+\vdots \\
+r_n
+\end{array}\right]
+\end{equation} 
+
+Now, we can use the gaussian elimination applied to this specific matrix $\mathbf{A}$. Following this procedure, we define two new variables:
+\begin{equation}
+\label{gen}
+\begin{split}
+&\tilde{b}_{i} = b_i - \frac{a_{i-1}c_{i-1}}{\tilde{b}_{i-1}} \\
+&\tilde{r}_i = r_i  - \tilde{r}_{i-1}\frac{a_{i-1}}{\tilde{b}_{i-1}} %controllare coeff
+\end{split}
+\end{equation}
+This substitution is called $\textit{forward substitution}$.\\
+In our particular case ($d_i=2$, $e_i=-1$), these variables become
+\begin{equation}
+\label{spec}
+\begin{split}
+&\tilde{d}_{i} = 2 - \frac{1}{d_{i-1}} = \frac{i+1}{i} \\
+&\tilde{r}_i = r_i  - \frac{\tilde{r}_{i-1}}{\tilde{d}_{i-1}}
+\end{split}
+\end{equation}
+where $i=2,3,\dots,n$ and $d_1 = 2$ and $\tilde{r}_1 = r_1$. 
+
+After that we obtain an upper triangular matrix:  
+
+\begin{equation}
+\label{Atilde}
+\mathbf{\tilde{A}} =\begin{bmatrix}
+d_1& e_1& 0 &\dots   & \dots &0 \\
+0 & \tilde{d}_2 & e_2 &0 &\dots &\dots \\
+0&0 & \tilde{d}_3 & e_3 & 0 & \dots \\
+& \ddots   & \ddots &\ddots   &\ddots & 0 \\
+0&\dots   &  &0 &\tilde{d}_{n_1}& e_n \\
+0&\dots    &  & 0  &0 & \tilde{d}_n \\
+\end{bmatrix},
+\end{equation}
+
+and our system becomes \[\mathbf{\tilde{A}}\mathbf{v}=\mathbf{\tilde{r}}\]
+At this point we can find the solutions, from the last to the first, with the so called \textit{backward substitution} i.e.
+\begin{equation}
+u_n=\frac{\tilde{r}_n}{\tilde{d}_n}\qquad u_i=\frac{(\tilde{r}_i-e_iu_{i+1})}{\tilde{d}_i}
+\end{equation}
+
+
+By following this reasoning, we develop a first general algorithm\footnote{Note that for \textit{general} we intend an algorithm where the operator has to choose and insert the coefficients of matrix $\mathbf{A}$; then the computer proceeds with filling and solving the matrix.}. 
+After that, finally, with forward and backward subst., using expressions (\ref{gen}) the solutions are found. %Inserire pezzo di codice (?).
+
+If we specialize the first code to our case $b_i=2$, $a_i=-1$, $c_i=-1$, we don't have to fill any matrix, and the computer can proceed directly to solve the particular equations (\ref{spec}).
+
+There is another way to accomplish this task: we can rewrite $\mathbf{A}$ as the product of two matrix (a down and an upper triangular matrix) $\mathbf{L}$ and $\mathbf{U}$:
+\begin{equation}
+\begin{bmatrix}
+b_1& c_1& 0 &\dots   & \dots &0 \\
+a_1 & b_2 & c_2 &0 &\dots &\dots \\
+0&a_2 & b_3 & c_3 & 0 & \dots \\
+& \ddots   & \ddots &\ddots   &\ddots & 0 \\
+0&\dots   &  &a_{n-2} &b_{n_1}& c_n \\
+0&\dots    &  & 0  &a_{n-1} & b_n \\
+\end{bmatrix}\left[\begin{array}{c}
+v_1 \\
+\vdots \\
+\vdots \\
+\vdots \\
+v_n
+\end{array}\right]=\left[\begin{array}{c}
+r_1 \\
+\vdots \\
+\vdots \\
+\vdots \\
+r_n
+\end{array}\right]
+\end{equation} 
+
+These three codes can be tested to find which one is the most efficient. At the beginning we construct the algorithms with dynamic allocation memory with pointers, but then we shift to the allocation provided by the library Armadillo.  %%for totale
+
+\section{Our results}
+
+We present our results in Fig.~\ref{fig:figure1}.
+
+\begin{figure} \label{fig:figure1}
+%\includegraphics[scale=0.4]{figure1.pdf}
+\caption{Our results could not be better}
+\end{figure}
+
+\section{Conclusions and perspectives}
+What a wonderful world!
+
+%\begin{thebibliography}{99}
+%\bibitem{heisenberg} W. Heisenberg, Zeits. f. Physik {\bf 77}, 1 (1932).
+%\bibitem{miller2006} G.~A.~Miller, A.~K.~Opper, and E.~J.~Stephenson, Annu.~Rev.~Nucl.~Sci.~{\bf 56}, 253 (2006).
+%\bibitem{ekstrom2015} A.~Ekstr\"om, G.~R.~Jansen, K.~A.~Wendt, G.~Hagen, T.~Papenbrock, B.~D.~Carlsson, C.~Forssen, M.~Hjorth-Jensen, P.~Navratil, and W.~Nazarewicz, Phys.~Rev.~C {\bf 91}, 051301(R) (2015).
+%\bibitem{brown1977} B. A. Brown, A. Arima and J. B. McGrory, Nucl. Phys. {\bf A277}, 77 (1977) and references therein.
+%\end{thebibliography}
+
+\end{document}
+
+
