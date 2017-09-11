@@ -60,10 +60,10 @@ int main(int argc, char* argv[])
     for (i=0; i<=n+1; i++){
         x[i]=i*h;
         r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
-        cout << "x"<<i<<":"<<x[i]<< endl;
+//        cout << "x"<<i<<":"<<x[i]<< endl;
     }
 
-    //vec v=solve(A,r); /*numerical solution with LU, and I print it*/
+    vec v=solve(A,r); /*numerical solution with LU, and I print it*/
     //cout << v << endl;
 
 //    // find LU decomp of A, if needed, P is the permutation matrix
