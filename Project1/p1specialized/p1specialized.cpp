@@ -103,9 +103,9 @@ int main(int argc, char* argv[]){
     for(i=n-1;i>0; i--){
                 v[i]=(r_t[i]+v[i+1])*i/(i+1);
     }
-    for(i=0; i<=n+1;i++){
-       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
-    }
+//    for(i=0; i<=n+1;i++){
+//       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
+//    }
 
     //computing relative errors
 //    int k;
