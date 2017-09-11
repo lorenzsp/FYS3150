@@ -38,7 +38,6 @@ int main(int argc, char* argv[]){
     vec b(n+1);
     vec c(n+1);
     vec x(n+2);
-    vec f(n+2);
     vec u(n+2); /*analytical solution*/
     u[n+1]=0;
     vec r(n+1);
@@ -61,16 +60,14 @@ int main(int argc, char* argv[]){
         x[i]=i*h;
         //cout << "x"<<i<<":"<<x[i]<< endl; /*print steps*/
     }
-    for(int i=1; i<=n;i++){
-        f[i]=f(x[i]);
-    }
+
     for (i=0; i<n+1; i++){
         u[i]=solution(x[i]);
        cout << "u"<<i<<":"<<u[i]<< endl; /*print analytical solution*/
     }
     //numerical solution
      for (i=1; i<=n; i++){
-        r[i]=h*h*f[i]; /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
+        r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
     }
 
     /*Filling a,b,c*/
@@ -118,10 +115,9 @@ int main(int argc, char* argv[]){
 
     //backward substitution
 
-        v[n]=r_t[n]/b_t[n];
+    v[n]=r_t[n]/b_t[n];
     for(i=n-1;i>0; i--){
-            v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
-
+        v[i]=(r_t[i] -a[i]*v[i+1])/(b_t[i]);
     }
 
     for(i=0; i<=n+1;i++){

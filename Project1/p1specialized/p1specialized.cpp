@@ -34,10 +34,6 @@ int main(int argc, char* argv[]){
 
     vec x(n+2);
     vec u(n+2);
-    vec f(n+2);
-
-
-
     u[n+1]=0;
     vec r(n+1);
     vec r_t(n+1); /*vectors with _t represents tilde vectors*/
@@ -63,19 +59,14 @@ int main(int argc, char* argv[]){
         //cout << "x"<<i<<":"<<x[i]<< endl; /*print steps*/
     }
 
-    for(int i=1; i<=n;i++){
-        f[i]=f(x[i]);
-    }
-
     for (i=0;i<n+1; i++){
         u[i]=solution(x[i]);
         //cout << "u"<<i<<":"<<u[i]<< endl;  /*print analytical solution*/
     }
 
-
     //numerical solution
      for (i=1; i<=n; i++){
-        r[i]=h*h*f[i]; /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
+        r[i]=h*h*f(x[i]); /*arranging the right side of equation -u''=r(x)=h^2*f(x)*/
     }
 
 //     /*Filling a,b,c*/
@@ -107,15 +98,14 @@ int main(int argc, char* argv[]){
 
     //backward substitution
 
-        v[n]=r_t[n]/b_t[n];
+
+    v[n]=r_t[n]/b_t[n];
     for(i=n-1;i>0; i--){
-            v[i]=(r_t[i]+v[i+1])*i/(i+1);
-
+                v[i]=(r_t[i]+v[i+1])*i/(i+1);
     }
-
-//    for(i=0; i<=n+1;i++){
-//       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
-//    }
+    for(i=0; i<=n+1;i++){
+       cout << "v"<<i<<"="<<v[i]<< endl; /*print numerical solution*/
+    }
 
     //computing relative errors
 //    int k;
